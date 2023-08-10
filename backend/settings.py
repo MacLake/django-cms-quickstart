@@ -78,6 +78,11 @@ INSTALLED_APPS = [
     'djangocms_frontend.contrib.image',
     'djangocms_frontend.contrib.tabs',
     'djangocms_frontend.contrib.utilities',
+
+    'djangocms_leaflet',
+    'djangocms_events',
+    'djangocms_photo_gallery',
+    'djangocms_fomantic_ui',
 ]
 
 MIDDLEWARE = [
@@ -131,6 +136,22 @@ THUMBNAIL_PROCESSORS = (
     'easy_thumbnails.processors.filters',
 )
 
+THUMBNAIL_ALIASES: dict[str, dict[str, dict[str, any]]] = {
+    '':
+        {
+            'event-list': {
+                'size': (600, 300),
+                'crop': True,
+                'upscale': True
+            },
+            'event-detail': {
+                'size': (600, 300),
+                'crop': False,
+                'upscale': True
+            },
+        }
+}
+
 CMS_TEMPLATES = [
     # Default template that extend base.html, to be used with Bootstrap 5
     ('bootstrap5.html', 'Bootstrap 5 Demo'),
@@ -139,6 +160,8 @@ CMS_TEMPLATES = [
     ('minimal.html', 'Minimal template'),
 
     ('whitenoise-static-files-demo.html', 'Static File Demo'),
+    ('djangocms_fomantic_ui/fomantic-ui.html', 'Fomantic UI'),
+    ('phi', 'phi.html'),
 ]
 
 WSGI_APPLICATION = 'backend.wsgi.application'

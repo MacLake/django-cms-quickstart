@@ -28,5 +28,10 @@ djangocms-frontend!=1.2.1
 
 django-filer
 
+djangocms-leaflet
+djangocms-events
+djangocms-fomantic-ui>=0.0.2b1
+djangocms-photo-gallery>=0.0.3b1
+
 
 pip-tools  # needed for compilation of this file into requirements.txt, see start of file

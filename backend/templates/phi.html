@@ -1,0 +1,383 @@
+{% load i18n cms_tags static sekizai_tags menu_tags static phi_tags robots_index %}
+<!doctype html>
+<html lang="{{ current_language }}">
+<head>
+	<link rel="icon" type="image/x-icon" href="{% static 'images/phi.ico' %}">
+	<title>{% block title %}{% page_attribute "page_title" %}{% endblock title %}</title>
+	{% language_chooser "menu/hreflang.html" %} {# Creates hreflang link elements, no language chooser #}
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	{% render_block "css" %}
+
+	{% block webpack %}
+	{#% addtoblock "js" strip %#} {# Must be included before any scripts that require jQuery #}
+	<script src="{% static 'webpack/index.bundle.js' %}"></script>
+	{#% endaddtoblock %#}
+	{% endblock webpack %}
+	{% addtoblock "js" strip %}
+	{% endaddtoblock %}
+	
+	{% block semantic_ui %}
+	{# Semantic UI #}
+	{% addtoblock "js" strip %}
+	{# <script src="{% static 'semantic/semantic.min.js' %}"></script> #}
+	<script src="{% static 'semantic/semantic.js' %}"></script>
+	{% endaddtoblock %}
+	{% addtoblock "css" strip %}
+	{# <link rel="stylesheet" type="text/css" href="{% static 'semantic/semantic.min.css' %}"> #}
+	{% endaddtoblock %}
+	{% addtoblock "css" strip %}
+	<link rel="stylesheet" type="text/css" href="{% static 'semantic/semantic.css' %}">
+	{% endaddtoblock %}
+	{% endblock semantic_ui %}
+	
+	{# JS Cookie #}
+	{% addtoblock "js" strip %}
+	<script src="{% static 'js/js.cookie.js' %}"></script>
+	{% endaddtoblock %}
+	
+	{# Fonts #}
+	{% block fonts %}
+	{% include "include/fonts/Open_Sans.html" %}
+	{% endblock fonts %}
+	
+	{% block theme_color %}
+	<meta name="theme-color" content="#b51621" />
+	{% endblock theme_color %}
+	
+	{% block menu_assets %}
+	{# Superfish menu #}
+	{% comment %}
+	{% addtoblock "js" strip %}
+	<script src="{% static 'js/superfish/js/jquery.hoverIntent.js' %}"></script>
+	{% endaddtoblock %}
+	{% endcomment %}
+	{% block superfish_style %}
+	{% addtoblock "css" strip %}
+	<link href="{% static 'js/superfish/css/superfish.css' %}" rel="stylesheet" media="screen">
+	{% endaddtoblock %}
+	{% endblock superfish_style %}
+	{% comment %}
+	{% addtoblock "js" strip %}
+	<script src="{% static 'js/superfish/js/superfish.min.js' %}"></script>
+	<script>
+        $(function () {
+            $('ul.sf-menu').superfish();
+        })
+	</script>
+	{% endaddtoblock %}
+	{% endcomment %}
+	{% endblock menu_assets %}
+	
+	{# Scripts initialzed after page has loaded #}
+	{% addtoblock "js" strip %}
+	<script>
+		$(function() {
+			{# *** Semantic UI *** #}
+			{# Sidebar menu #}
+			$("#menu-icon").click(function() {
+				$('.ui.sidebar').sidebar('toggle');
+			})
+			
+			if (Cookies.get('message') == 'read') {
+				$("#cookie-message").hide();
+			}
+			{# Show desktop menu below Django CMS toolbar if logged in: #}
+			{# TODO:  Check if user is editor, i. e. sees the toolbar. #}
+			{% if request.user.username %}
+				$("#desktop-menu, #mobile-menu-bar").css("top", "46px");
+			{% endif %}
+
+            {# Matching of div.field of a required input which is a direct child works only like this: #}
+			$("input[required], select[required]").parent().addClass("required")
+            // {#  Deeper nested required inputs: div.field can be selected with parentsUntil() #}
+			// {#  TODO: Why are there two asterisks at checkboxes? #}
+			$("input[required], select[required]").parentsUntil("div.field").parent().addClass("required")
+			$("textarea[required]").parent().parent().addClass("required")
+		})
+	</script>
+	{% endaddtoblock %}
+	
+	{# <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}"> moved to SUI #}
+	
+	{% block extra_head %}
+	<link rel="icon" type="image/x-icon" href="{% static 'phi/images/phi.ico' %}">
+	{% endblock extra_head %}
+	{% addtoblock "css" %}
+	<style>
+		#wide-section, #wide-section * {
+			max-width: 100%;
+		}
+		#wide-section {
+			width: 100%;
+		}
+		#wide-section .ui.image {
+			width: 100%;
+		}
+	</style>
+	{% endaddtoblock %}
+	
+	{% block corporate_contact %}
+	{# Corporate Contact for search engines #}
+	{% addtoblock "js" strip %}
+	<script type="application/ld+json">
+		{
+			"@context": "http://schema.org",
+			"@type": "Organization",
+			"name": "Passive House Institute GmbH",
+			"url": "http://passivehouse.com/",
+			"sameAs": [
+				"https://www.facebook.com/PassiveHouseInternational",
+				"https://twitter.com/the_iPHA",
+				"https://www.youtube.com/channel/UCrO62YaHJbtZgZXk-m57B-g",
+				"https://www.flickr.com/photos/passive-house-institute",
+				"https://www.linkedin.com/company/passive-house-institute/"
+			],
+			"logo": "https://database.passivehouse.com/static/certified_components_v2/images/logo_phi_en.png",
+			"contactPoint": [
+				{
+					"@type": "ContactPoint",
+					"telephone": "+49 6151 82699-0",
+					"contactType": "customer service",
+					"availableLanguage": [
+						"German",
+						"English"
+					]
+				}
+			]
+		}
+	</script>
+	{% endaddtoblock %}
+	{% endblock corporate_contact %}
+	
+	{% page_robots %}
+</head>
+<body>
+{% cms_toolbar %}
+
+{% block toast_messages %}
+{% if messages %}
+{% addtoblock "js" strip %}
+<script>
+	{% for message in messages %}
+	$('body').toast({
+        {% if message.tags %}class: '{{ message.tags }}',{% endif %}
+        message: `{{ message }}`
+    });
+    {% endfor %}
+</script>
+{% endaddtoblock %}
+{% endif %}
+{% endblock toast_messages %}
+
+{# Sidebar menu for mobiles #}
+{% block sidebar %}
+ <div class="ui left sidebar">
+	{% block sidebar_logo %}
+	<div class="sidebar-logo">
+		<img alt="Passive House Institute logo" class="sidebar-logo" src="{% static 'images/phi_en.svg' %}"/>
+	</div>
+	{% endblock sidebar_logo %}
+	{% block language_chooser_sidebar %}
+	{% language_chooser "menu/language_chooser_mobile.html" %}
+	{% endblock language_chooser_sidebar %}
+	{% block sidebar_menu %}
+	
+	 <div class="ui vertical menu">
+		 {% show_menu 0 0 0 0 "menu/mobile.html" %}
+		 {% show_menu 1 100 0 1 "menu/mobile.html" %}
+	 </div>
+	{% endblock sidebar_menu %}
+</div>
+{% endblock sidebar %}
+
+
+<div class="pusher">
+	{# Navigation #}
+	{% block navigation %}
+	<div id="navi" class="ui grid container">
+		
+		<div id="mobile-menu-bar" class="ui mobile tablet only row">
+			<i id="menu-icon" class="big content icon"></i>
+			{% block 'mobile_logo' %}{% static_placeholder 'mobile logo' site %}{% endblock %}
+		</div>
+		
+		<div id="header-1" class="computer only row">
+			{% block navigation_bar %}
+			{% block logo %}
+			<div class="two wide column">
+				<img id="logo" src="{% static 'images/phi_en.svg' %}" alt="Passive House Institute logo"/>
+			</div>
+			{% endblock logo %}
+			
+			{% block search %}
+			<div class="four wide right aligned right floated column">
+				<div class="ui search">
+					<div class="ui icon input">
+						{% addtoblock "js" strip %}
+						<script>
+							$(function() {
+								$('#search_field').bind("enterKey",function(e){
+								   url = "https://duckduckgo.com/?q="+ $("#search_field").val() + "%20site:{% block search_domain %}passivehouse.com{% endblock %}&t=ffsb&ia=qa"
+								    var win = window.open(url, '_blank');
+	                                win.focus();
+								});
+								$('#search_field').keyup(function(e){
+								    if(e.keyCode == 13)
+								    {
+								        $(this).trigger("enterKey");
+								    }
+								});
+							});
+						</script>
+						{% endaddtoblock %}
+						<input id="search_field" class="prompt" placeholder="{% trans 'Search' %}" type="text"/>
+						<i class="search icon"></i>
+					</div>
+					<div class="results"></div>
+				</div>
+			</div>
+			{% endblock search %}
+			
+			{% block language_chooser %}
+			<div class="three wide right aligned column">
+				{% language_chooser "menu/language_chooser.html" %}
+			</div>
+			{% endblock language_chooser %}
+			
+			{% block logo_2 %}
+			{% endblock logo_2 %}
+			
+			{% block logo_3 %}
+			{% endblock logo_3 %}
+			
+			{% endblock navigation_bar %}
+		</div>
+	</div>
+	{% endblock navigation %}
+	
+	{% block desktop-menu-container %}
+	<div id="desktop-menu" class="ui computer only grid container">
+		<div class="row">
+			{% block desktop_menu %}
+			{# Superfish menu #}
+			<ul class="sf-menu twelve wide column">
+				{% show_menu 0 0 0 0 "menu/menu.html" %} {# home page (of soft root) #}
+				{% show_menu 1 100 100 100 "menu/menu.html" %} {# items below home page (of soft root) #}
+			</ul>
+			{% endblock desktop_menu %}
+		</div>
+	</div>
+	{% endblock desktop-menu-container %}
+	
+	{# Placeholder e. g. for a wide picture on the top of the page #}
+	<div id="wide-section">
+		{% block wide_section %}
+		{% placeholder "wide section" %}
+		{% endblock wide_section %}
+	</div>
+	
+	{% block header-container %}
+	<div id="header_container" class="ui stackable grid container">
+		{# Breadcrumb menu in JSON format for search engines #}
+		{% show_breadcrumb 0 "menu/breadcrumb_json-ld.html" 0 %}
+		
+		<div class="row">
+			{% block breadcrumb %}{% show_breadcrumb 0 "menu/breadcrumb.html" 0 %}{% endblock breadcrumb %}
+		</div>
+		
+		{% comment %}
+		<div class="row">
+			{% show_breadcrumb 0 "menu/breadcrumb_microdata.html" 0 %}
+		</div>
+		{% endcomment %}
+		
+		{% comment %}
+		{# Cookie warning #}
+		<div class="row">
+			<div id="cookie-message" class="ui icon warning message">
+				<i class="close icon"></i>
+				<i class="circular info icon"></i>
+				<div class="content">
+					<div class="header">
+						Attention!
+					</div>
+					<ul class="ui list">
+						<li>
+							We use cookies to ensure our stomaches get the best experience.
+						</li>
+					</ul>
+				</div>
+			</div>
+			
+			<div class="ui inline cookie nag">
+					  <span class="title">
+						We use cookies to ensure our stomaches get the best experience.
+					  </span>
+				<i class="close icon"></i>
+			</div>
+		</div>
+		{% endcomment %}
+	</div>
+	{% endblock header-container %}
+	
+	{% block content-container %}
+	<div id="content-container" class="ui stackable grid container">
+		{# Main content #}
+		<div id="content" class="row"> {# TODO: still necessary? #}
+			<div class="twelve wide column"> {# TODO: still necessary? #}
+				{% block content %}{% placeholder "content" %}{% endblock content %}
+			</div>
+		</div>
+	</div>
+	{% endblock content-container %}
+	
+	{# Footer #}
+	{% block footer-container %}
+	<div id="footer-outer-container" class="ui stackable grid container">
+		<footer id="footer" class="row ui raised segment">
+			<div class="eight wide column">
+				{% block footer %}
+				{% static_placeholder "footer" site %}
+				{% endblock footer %}
+			</div>
+	
+			<div class="four wide right floated right aligned column">
+				{% block social_networks %}
+				<a target="_blank" href="https://www.facebook.com/pages/IG-Passivhaus-Deutschland/103974982998874"
+				   class="ui circular grey icon button" data-tooltip="{% trans 'IG Passivhaus on Facebook' %}"
+				   data-position="bottom center">
+					<i class="facebook icon"></i>
+				</a>
+				
+				<a target="_blank" href="https://www.youtube.com/channel/UCrO62YaHJbtZgZXk-m57B-g"
+				   class="ui circular grey icon button"
+				   data-tooltip="{% trans 'International Passive House Association on Youtube' %}"
+				   data-position="bottom center">
+					<i class="youtube icon"></i>
+				</a>
+				
+				<a target="_blank" href="https://twitter.com/IGPassivhaus" class="ui circular grey icon button"
+				   data-tooltip="{% trans 'IG Passivhaus on Twitter' %}" data-position="bottom center">
+					<i class="twitter icon"></i>
+				</a>
+				
+				<a target="_blank" href="http://www.linkedin.com/company/passive-house-institute"
+				   class="ui circular grey icon button" data-tooltip="{% trans 'Passivhouse Institute on Linked In' %}"
+				   data-position="bottom center">
+					<i class="linkedin icon"></i>
+				</a>
+				{% endblock social_networks %}
+			</div>
+		</footer>
+	</div>
+	{% endblock footer-container %}
+</div>
+
+{% render_block "js" %}
+
+{% block tracking %}
+{% tracking 9 %}
+{% endblock tracking %}
+
+</body>
+</html>
