@@ -26,6 +26,7 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 # Application definition
 
 INSTALLED_APPS = [
+    'modeltranslation',
     'backend',
 
     # optional, but used in most projects
