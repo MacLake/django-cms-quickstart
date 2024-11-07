@@ -28,6 +28,7 @@ djangocms-frontend!=1.2.1
 
 django-filer
 
+djangocms-blog @ git+https://github.com/fsbraun/djangocms-blog
 djangocms-leaflet
 djangocms-events
 djangocms-fomantic-ui>=0.0.2b1

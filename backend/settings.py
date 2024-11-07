@@ -1,3 +1,4 @@
+from gettext import gettext
 from pathlib import Path
 import os
 import dj_database_url
@@ -78,6 +79,13 @@ INSTALLED_APPS = [
     'djangocms_frontend.contrib.image',
     'djangocms_frontend.contrib.tabs',
     'djangocms_frontend.contrib.utilities',
+
+    # 'aldryn_apphooks_config',
+    'taggit',
+    'taggit_autosuggest',
+    'meta',
+    'sortedm2m',
+    'djangocms_blog',
 
     'djangocms_leaflet',
     'djangocms_events',
@@ -162,6 +170,11 @@ CMS_TEMPLATES = [
     ('whitenoise-static-files-demo.html', 'Static File Demo'),
     ('djangocms_fomantic_ui/fomantic-ui.html', 'Fomantic UI'),
     ('phi', 'phi.html'),
+]
+
+LANGUAGES: list = [
+    ('en', gettext('English')),
+    ('de', gettext('German')),
 ]
 
 WSGI_APPLICATION = 'backend.wsgi.application'
